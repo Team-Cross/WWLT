@@ -10,6 +10,7 @@
   - [Security]
     * [keywords](/security-Hackryptic/keywords.md "keywords.md")
     * [SQL_Injection](/security-Hackryptic/SQL_Injection.md "SQL_Injection")
+    * [Stack_Buffer_Overflow(Linux)](/security-Hackryptic/Stack_Buffer_Overflow.md "Stack_Buffer_Overflow.md")
   - [System]
     * [Compiled Language와 Interpreted Language의 차이점](/System-Hackryptic/static_dynamic_difference.md "static_dynamic_difference.md")
 - [Deep Learning]
