@@ -1,17 +1,20 @@
 
 # Table of Contents
 
-1.  [Stack-Based Buffer Overflow](#orga09dc41)
-2.  [Memory Sections](#orgbf22b60)
-3.  [Prevention](#orge9962eb)
-4.  [ROP(Return Oriented Programming)](#orgdf579ee)
+1.  [Stack-Based Buffer Overflow](#orgf22bc7b)
+2.  [Memory Sections](#org85a1d22)
+3.  [Prevention](#org0a918e3)
+4.  [ROP(Return Oriented Programming)](#orgdee3859)
+5.  [CPU General Purpose Register](#org12d5607)
+6.  [Call 명령어](#org637ff66)
+7.  [Endianness](#org31bb520)
 
 \#-**- mode: org -**-
 
 본 포스트는 HackTheBox Academy의 "STACK-BASED BUFFER OVERFLOWS ON LINUX X86" 모듈을 개인적으로 공부하며 정리한 내용이다.
 
 
-<a id="orga09dc41"></a>
+<a id="orgf22bc7b"></a>
 
 # Stack-Based Buffer Overflow
 
@@ -19,7 +22,7 @@
 -   공격자가 임의의 코드를 작성하거나 return address를 조작하는 등의 방식으로 악용할 수 있다.
 
 
-<a id="orgbf22b60"></a>
+<a id="org85a1d22"></a>
 
 # Memory Sections
 
@@ -30,7 +33,7 @@
 -   Stack: LIFO 구조로 구성되며 return address, 지역 변수, 파라미터 등이 스택 프레임 구조로 할당되는 공간이다. (경우에 따라서는 스택 포인터 값 역시 저장된다.)
 
 
-<a id="orge9962eb"></a>
+<a id="org0a918e3"></a>
 
 # Prevention
 
@@ -38,9 +41,63 @@
 -   ASLR(Address Space Layout Randomization): 메모리에 할당되는 바이너라와 동적모듈(dll등)의 base address를 실행시마다 randomization 한다.
 
 
-<a id="orgdf579ee"></a>
+<a id="orgdee3859"></a>
 
 # ROP(Return Oriented Programming)
 
 -   프로그램에(혹은 라이브러리에) 포함된 기능들을 이용하기 위한 목적으로 return address를 조작함으로써 프로그램의 흐름을 바꾸는 행위이다.
+
+
+<a id="org12d5607"></a>
+
+# CPU General Purpose Register
+
+-   64비트 레지스터로써 다룰시에는 R이 붙는다 (RAX, RBX, RCX &#x2026;)
+
+-   이하의 4가지 레지스터들은 Data regsister라 불리며 아래에서 설명하는 용도뿐 아니라 계산값들을 일시적으로 저장하는 등의 용도로 범용적으로 사용된다.  
+    -   EAX: 산술 연산의 accumulator로써 사용된다.. (Function의 return value를 저장하는 용도로도 종종 사용된다.)
+    -   EBX: memory addressing을 위한 base address를 저장하는 데 사용된다.
+    -   ECX: Loop에서 conter 역할로 주로 사용된다.
+    -   EDX: Multiply나 Division시에 큰 값을 다루기 위한 용도로 간혹 사용되며, I/O 과정에서 입출력장치와 데이터를 주고 받는데도 사용된다고 한다.
+
+-   다음 3가지 레지스터들은 Pointer Register로서 대부분의 경우 아래에서 설명하는 용도로만 사용된다.
+    -   EIP: 다음에 실행되는 명령어의 주소를 가지고 있다.
+    -   ESP: 스택의 가장 위쪽 (마지막으로 데이터를 push한 address)를 가리키는 주소를 담고 있다.
+    -   EBP: 현재 스택 프레임의 기준이 되는 base 부분을 가리키는 주소를 담고 있다.
+
+-   다음 2가지 index register들은 주로 string 관련 작업(혹은 1바이트씩 처리하는 기타 작업들)을 처리하는 데 사용된다.
+    -   ESI: source index 주소를 가리키는 데 사용된다.
+    -   EDI: destination index 주소를 가리키는 데 사용된다.
+
+-   Stack Frame: Base Pointer와 Stack Pointer로 정의되는 공간으로써 스택 프레임에 대응되는 함수의 데이터(지역변수 등)들이 저장된다.
+
+-   대부분의 함수의 시작과 끝부분에는 새로운 스택 프레임을 만들고 정리하는 부분이 있다.
+    -   prologue:
+        
+            push ebp
+            mov ebp, esp
+    
+    -   epliogue:
+        
+            mov esp, ebp
+            pop ebp ; 이 부분까지는 leave로 대체할 수 있음
+            ret
+
+
+<a id="org637ff66"></a>
+
+# Call 명령어
+
+-   call 명령어가 수행될 시에는
+    1.  우선 현재 EIP값(원래 다음 명령어를 가리키던 값)을 스택에 저장하고
+    2.  EIP에 Function이 시작하는 주소를 새로 대입한다.
+
+
+<a id="org31bb520"></a>
+
+# Endianness
+
+-   데이터가 메모리 공간에 저장될 때 각 바이트가 어떠한 순서로 저장되는 지 정의한다.
+-   Big-endian: 데이터를 원래 순서대로 저장 (0x12345678: 0x12, 0x34, 0x56, 0x78)
+-   Little-endian: 데이터를 역순의 바이트 순서로 저장 (0x12345678: 0x78, 0x56, 0x34, 0x12)
 
