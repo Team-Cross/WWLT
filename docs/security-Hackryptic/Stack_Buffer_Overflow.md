@@ -1,20 +1,21 @@
 
 # Table of Contents
 
-1.  [Stack-Based Buffer Overflow](#orgf22bc7b)
-2.  [Memory Sections](#org85a1d22)
-3.  [Prevention](#org0a918e3)
-4.  [ROP(Return Oriented Programming)](#orgdee3859)
-5.  [CPU General Purpose Register](#org12d5607)
-6.  [Call 명령어](#org637ff66)
-7.  [Endianness](#org31bb520)
+1.  [Stack-Based Buffer Overflow](#org5f5f579)
+2.  [Memory Sections](#orgdda3ebb)
+3.  [Prevention](#org0a8ba61)
+4.  [ROP(Return Oriented Programming)](#org573469f)
+5.  [CPU General Purpose Register](#org6212f4c)
+6.  [Call 명령어](#orgd88602e)
+7.  [Endianness](#org5ac5669)
+8.  [Shellcode](#orgd388966)
 
 \#-**- mode: org -**-
 
 본 포스트는 HackTheBox Academy의 "STACK-BASED BUFFER OVERFLOWS ON LINUX X86" 모듈을 개인적으로 공부하며 정리한 내용이다.
 
 
-<a id="orgf22bc7b"></a>
+<a id="org5f5f579"></a>
 
 # Stack-Based Buffer Overflow
 
@@ -22,7 +23,7 @@
 -   공격자가 임의의 코드를 작성하거나 return address를 조작하는 등의 방식으로 악용할 수 있다.
 
 
-<a id="org85a1d22"></a>
+<a id="orgdda3ebb"></a>
 
 # Memory Sections
 
@@ -33,22 +34,23 @@
 -   Stack: LIFO 구조로 구성되며 return address, 지역 변수, 파라미터 등이 스택 프레임 구조로 할당되는 공간이다. (경우에 따라서는 스택 포인터 값 역시 저장된다.)
 
 
-<a id="org0a918e3"></a>
+<a id="org0a8ba61"></a>
 
 # Prevention
 
 -   DEP(Data Execution Prevention): 메모리 공간에 read-only 권한만을 지정함으로써, Stack 공간에서의 코드 실행을 방지하는 방법이다.
 -   ASLR(Address Space Layout Randomization): 메모리에 할당되는 바이너라와 동적모듈(dll등)의 base address를 실행시마다 randomization 한다.
+-   Canaries: 버퍼와 return address 주소 사이에 일정한 값을 두고, 해당 값이 변경되었는지 체크하는 방법이다.
 
 
-<a id="orgdee3859"></a>
+<a id="org573469f"></a>
 
 # ROP(Return Oriented Programming)
 
 -   프로그램에(혹은 라이브러리에) 포함된 기능들을 이용하기 위한 목적으로 return address를 조작함으로써 프로그램의 흐름을 바꾸는 행위이다.
 
 
-<a id="org12d5607"></a>
+<a id="org6212f4c"></a>
 
 # CPU General Purpose Register
 
@@ -84,7 +86,7 @@
             ret
 
 
-<a id="org637ff66"></a>
+<a id="orgd88602e"></a>
 
 # Call 명령어
 
@@ -93,11 +95,22 @@
     2.  EIP에 Function이 시작하는 주소를 새로 대입한다.
 
 
-<a id="org31bb520"></a>
+<a id="org5ac5669"></a>
 
 # Endianness
 
 -   데이터가 메모리 공간에 저장될 때 각 바이트가 어떠한 순서로 저장되는 지 정의한다.
 -   Big-endian: 데이터를 원래 순서대로 저장 (0x12345678: 0x12, 0x34, 0x56, 0x78)
 -   Little-endian: 데이터를 역순의 바이트 순서로 저장 (0x12345678: 0x78, 0x56, 0x34, 0x12)
+
+
+<a id="orgd388966"></a>
+
+# Shellcode
+
+-   공격대상에서 쉘을 실행하기 위해 사용하는 코드.
+-   쉘 코드를 직접 작성할 수도 있지만 적절한 툴들을 사용하면(msfvenom이나 파이썬의 pwntools 모듈 등) 간편하게 생성할 수 있다.
+    -   다만 쉘 코드가 내부적으로 어떻게 동작하는 지에 대한 개념은 알고 있는 것이 좋다.
+
+-쉘 코드 작성시 CPU 아키텍처와 대상 플랫폼 그리고 쉘코드에서 제외되어야 하는 문자들(null 등)에 유의하여 작성해야 한다.
 
