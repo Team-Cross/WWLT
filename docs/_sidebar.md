@@ -13,4 +13,5 @@
     * [Stack_Buffer_Overflow(Linux)](/security-Hackryptic/Stack_Buffer_Overflow.md "Stack_Buffer_Overflow.md")
   - [System]
     * [Compiled Language와 Interpreted Language의 차이점](/System-Hackryptic/static_dynamic_difference.md "static_dynamic_difference.md")
+    * [네트워크 이론 개요](/System-Hackryptic/networking_basics.md "networking_basics.md")
 - [Deep Learning]
