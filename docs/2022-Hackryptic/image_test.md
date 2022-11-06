@@ -5,5 +5,5 @@
 
 \#-**- mode: org -**-
 
-<img src="https://drive.google.com/file/d/1yEu8Fd3xywLFlwfsCohoYbLlxaJiO-b0/view?usp=share_link" width=100>
+<img src="https://drive.google.com/uc?export=view&id=1yEu8Fd3xywLFlwfsCohoYbLlxaJiO-b0" width=100>
 
