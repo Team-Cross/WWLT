@@ -24,7 +24,7 @@
    
 - credential은 다음과 같이 photobomb.js 에서 확인할 수 있다.
 
-<img src="https://drive.google.com/uc?export=view&id=1WkQJNK1qGjfxyiBAUZ-rQa4Vl9DwtgKi" height=>
+<img src="https://drive.google.com/uc?export=view&id=1WkQJNK1qGjfxyiBAUZ-rQa4Vl9DwtgKi">
   
 - 이미지 다운로드 페이지에서는 다운로드 받을 이미지와 해상도를 선택하여 다운받을 수 있다.
 
