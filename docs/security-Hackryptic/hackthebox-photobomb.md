@@ -28,6 +28,7 @@
   
 - 이미지 다운로드 페이지에서는 다운로드 받을 이미지와 해상도를 선택하여 다운받을 수 있다.
 
+<br/>
 <img src="https://drive.google.com/uc?export=view&id=1S8Jrrh3PzRLM7IAIgEx8Wj8GUXd6WJR6" height=500>
 
 - 이미지 다운로드 버튼을 클릭하면 아래의 파라미터들이 POST 메소드를 통해 전달된다.
